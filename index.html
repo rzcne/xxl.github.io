@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>冰书消消乐-休闲小游戏</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            grid-gap: 5px;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            background-color: lightblue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        #score {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #recharge-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        #recharge-options {
+            display: none;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .recharge-option {
+            margin: 5px;
+            padding: 10px;
+            cursor: pointer;
+            background-color: #2196F3;
+            color: white;
+            border-radius: 5px;
+            display: inline-block; /* 设置为inline-block以便横向排列 */
+        }
+        .recharge-option:hover {
+            background-color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+
+<h1>冰书消消乐</h1>
+<div id="score">得分: 0</div>
+<div id="grid"></div>
+<button id="recharge-button" onclick="toggleRechargeOptions()">充值</button>
+<div id="recharge-options">
+    <div class="recharge-option" onclick="window.location.href='https://qr.alipay.com/2m6141045mqhddxwdtinpea'">5元</div>
+    <div class="recharge-option" onclick="window.location.href='https://qr.alipay.com/2m6175288hrb1n9gbjemy9b'">100元</div>
+    <br> <!-- 换行 -->
+    <div class="recharge-option" onclick="window.location.href='https://qr.alipay.com/2m617740m7sldoyxbwppq96'">1500元</div>
+    <div class="recharge-option" onclick="window.location.href='https://qr.alipay.com/2m618675v9urotjjugaso02'">5000元</div>
+</div>
+
+<script>
+    const fruits = ['🍋', '🍓', '🍍', '🥭', '🍊']; // 使用水果图标
+    const grid = document.getElementById('grid');
+    const scoreDisplay = document.getElementById('score');
+    let cells = [];
+    let score = 0;
+
+    // 创建游戏网格
+    function createGrid() {
+        for (let i = 0; i < 64; i++) {
+            const cell = document.createElement('div');
+            const fruit = fruits[Math.floor(Math.random() * fruits.length)];
+            cell.classList.add('cell');
+            cell.textContent = fruit;
+            cell.setAttribute('data-index', i);
+            cell.addEventListener('click', () => handleCellClick(i));
+            grid.appendChild(cell);
+            cells.push(cell);
+        }
+    }
+
+    // 处理单元格点击
+    function handleCellClick(index) {
+        const fruit = cells[index].textContent;
+        const matchedCells = findMatches(index, fruit);
+        if (matchedCells.length > 0) {
+            // 增加得分
+            score += matchedCells.length;
+            scoreDisplay.textContent = `得分: ${score}`;
+            matchedCells.forEach(i => {
+                cells[i].textContent = '';
+            });
+            // 更新网格
+            setTimeout(() => updateGrid(), 500);
+        }
+    }
+
+    // 查找匹配的单元格
+    function findMatches(index, fruit) {
+        const matches = [];
+        const row = Math.floor(index / 8);
+        const col = index % 8;
+
+        // 检查横向和纵向
+        for (let i = 0; i < 8; i++) {
+            if (cells[row * 8 + i].textContent === fruit) {
+                matches.push(row * 8 + i);
+            }
+            if (cells[i * 8 + col].textContent === fruit) {
+                matches.push(i * 8 + col);
+            }
+        }
+        
+        return [...new Set(matches)]; // 去重
+    }
+
+    // 更新网格
+    function updateGrid() {
+        for (let i = 0; i < cells.length; i++) {
+            if (cells[i].textContent === '') {
+                const fruit = fruits[Math.floor(Math.random() * fruits.length)];
+                cells[i].textContent = fruit;
+            }
+        }
+    }
+
+    // 切换充值选项显示
+    function toggleRechargeOptions() {
+        const options = document.getElementById('recharge-options');
+        options.style.display = options.style.display === 'none' ? 'block' : 'none';
+    }
+
+    createGrid();
+</script>
+
+</body>
+</html>
